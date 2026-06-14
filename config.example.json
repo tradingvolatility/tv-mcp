@@ -1,0 +1,4 @@
+{
+  "tv_api_key": "${TV_API_KEY}",
+  "tv_api_base_url": "https://stocks.tradingvolatility.net/api/v2"
+}

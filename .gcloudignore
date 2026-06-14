@@ -1,0 +1,38 @@
+# Keep the Cloud Build upload lean and never ship secrets or local config.
+# The Dockerfile only needs pyproject.toml, README.md, and src/.
+#
+# NOTE: .gcloudignore does NOT inherit from .gitignore once it exists, so secret
+# patterns (.env, config.json, *.local.json) are repeated here explicitly.
+
+.git
+.gitignore
+.github
+
+# Python / build caches
+.venv
+venv
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+
+# Tests and docs aren't needed in the image
+tests
+docs
+
+# Secrets / local config — never upload to Cloud Build
+.env
+.env.*
+config.json
+*.local.json
+tv-mcp.config.json
+
+# Tooling / editor / OS
+.claude
+.idea
+.vscode
+.DS_Store

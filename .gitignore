@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Env / secrets — never commit API keys or local MCP config
+.env
+.env.*
+!.env.example
+*.local.json
+config.json
+tv-mcp.config.json
+
+# GCP service-account keys — never commit
+*-key.json
+gcp-*.json
+service-account*.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
