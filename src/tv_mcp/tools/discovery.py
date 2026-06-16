@@ -1,7 +1,8 @@
 """Discovery, ranking, and capability tools (T1.3, T1.4).
 
 ``rank_top_setups`` and ``run_screener`` expose the cross-ticker opportunity ranking (the
-screener applies a named thesis preset over the same ranking). ``get_trade_setup`` returns
+screener applies a named thesis preset over the same ranking). ``rank_income_setups`` ranks
+covered-call / cash-secured-put income candidates across tickers. ``get_trade_setup`` returns
 the compact agent-oriented trade setup for one ticker. ``list_capabilities`` returns the v2
 ``/llm-spec`` manifest so an agent can self-orient and iteratively discover what's available.
 """
@@ -198,6 +199,48 @@ def register(mcp: FastMCP) -> None:
             price_max=price_max,
         )
         return await with_tv(lambda c: c.run_screener(preset, params))
+
+    @mcp.tool(
+        name="rank_income_setups",
+        description=(
+            "Rank single-leg income setups (covered calls and cash-secured puts) across all "
+            "tickers by an IVR-led, regime-guarded income-fit score (descending). Each ticker "
+            "may surface as both a CC and a CSP candidate, each with a 1-sigma suggested strike, "
+            "estimated premium, annualized yield, assignment/cap price, and breakeven. Filters "
+            "(all optional): `type` ('cc' or 'csp'; omit for both), `min_income_score` (0-10), "
+            "`limit` (2-50, default 10). Estimates are as-of the latest snapshot; earnings/event "
+            "risk is flagged in each row's caveats but not filtered out."
+        ),
+    )
+    async def rank_income_setups(
+        type: str | None = None,
+        min_income_score: float | None = None,
+        limit: int | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {}
+        if type is not None:
+            strategy = type.strip().lower()
+            if strategy not in ("cc", "csp"):
+                return error_envelope(
+                    "invalid_input",
+                    f"{type!r} is not a valid income setup type.",
+                    "Use 'cc' (covered call) or 'csp' (cash-secured put), or omit for both.",
+                )
+            params["type"] = strategy
+        if min_income_score is not None:
+            if min_income_score < 0 or min_income_score > 10:
+                return error_envelope(
+                    "invalid_input",
+                    f"`min_income_score` must be 0-10 (got {min_income_score}).",
+                )
+            params["min_income_score"] = min_income_score
+        if limit is not None:
+            if limit < 2 or limit > 50:
+                return error_envelope(
+                    "invalid_input", f"`limit` must be 2-50 (got {limit})."
+                )
+            params["limit"] = limit
+        return await with_tv(lambda c: c.get_income_setups(params))
 
     @mcp.tool(
         name="get_trade_setup",

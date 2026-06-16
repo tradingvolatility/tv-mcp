@@ -1,6 +1,6 @@
 [project]
 name = "tv-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Model Context Protocol server for Trading Volatility — discover and retrieve options market-structure data (GEX, gamma, skew, options flow, ranked trade setups) conversationally over the public v2 API."
 readme = "README.md"
 requires-python = ">=3.10"

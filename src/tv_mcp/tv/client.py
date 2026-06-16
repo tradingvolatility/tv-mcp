@@ -276,6 +276,10 @@ class TVClient:
         """``GET /top-setups/screener/{name}`` — a named preset over the same ranking."""
         return await self._get(f"/top-setups/screener/{_seg(name)}", params=params)
 
+    async def get_income_setups(self, params: dict[str, Any] | None = None) -> Any:
+        """``GET /income-setups`` — cross-ticker covered-call / cash-secured-put ranking."""
+        return await self._get("/income-setups", params=params)
+
     async def get_trade_setup(self, ticker: str) -> Any:
         """``GET /agent/trade-setup/{ticker}`` — compact agent-oriented trade setup."""
         return await self._get(f"/agent/trade-setup/{_seg(ticker)}")

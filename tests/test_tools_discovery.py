@@ -85,6 +85,60 @@ async def test_run_screener_unknown_preset_404(with_api_key):
 
 
 @respx.mock
+async def test_rank_income_setups_forwards_filters(with_api_key):
+    route = respx.get(f"{BASE_URL}/income-setups").mock(
+        return_value=httpx.Response(200, json={"data": {"items": []}})
+    )
+    await _call("rank_income_setups", type="CSP", min_income_score=5, limit=20)
+    params = route.calls.last.request.url.params
+    assert params["type"] == "csp"
+    assert params["min_income_score"] == "5.0"
+    assert params["limit"] == "20"
+
+
+@respx.mock
+async def test_rank_income_setups_omits_unset(with_api_key):
+    route = respx.get(f"{BASE_URL}/income-setups").mock(
+        return_value=httpx.Response(200, json={"data": {"items": []}})
+    )
+    await _call("rank_income_setups")
+    params = route.calls.last.request.url.params
+    assert "type" not in params
+    assert "min_income_score" not in params
+    assert "limit" not in params
+
+
+@respx.mock
+async def test_rank_income_setups_rejects_bad_type(with_api_key):
+    route = respx.get(url__regex=rf"{BASE_URL}.*").mock(
+        return_value=httpx.Response(200, json={"data": {"items": []}})
+    )
+    data = await _call("rank_income_setups", type="spread")
+    assert data["error"]["reason"] == "invalid_input"
+    assert route.call_count == 0
+
+
+@respx.mock
+async def test_rank_income_setups_rejects_out_of_range_score(with_api_key):
+    route = respx.get(url__regex=rf"{BASE_URL}.*").mock(
+        return_value=httpx.Response(200, json={"data": {"items": []}})
+    )
+    data = await _call("rank_income_setups", min_income_score=50)
+    assert data["error"]["reason"] == "invalid_input"
+    assert route.call_count == 0
+
+
+@respx.mock
+async def test_rank_income_setups_rejects_out_of_range_limit(with_api_key):
+    route = respx.get(url__regex=rf"{BASE_URL}.*").mock(
+        return_value=httpx.Response(200, json={"data": {"items": []}})
+    )
+    data = await _call("rank_income_setups", limit=99)
+    assert data["error"]["reason"] == "invalid_input"
+    assert route.call_count == 0
+
+
+@respx.mock
 async def test_get_trade_setup(with_api_key):
     respx.get(f"{BASE_URL}/agent/trade-setup/AAPL").mock(
         return_value=httpx.Response(200, json={"data": {"ticker": "AAPL"}})

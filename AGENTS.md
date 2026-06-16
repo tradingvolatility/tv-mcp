@@ -41,6 +41,7 @@ querying. Call `get_auth_status` to see whether you're in keyed or demo mode.
 | `get_options_volume` | Options volume by strike for an expiration |
 | `rank_top_setups` | Cross-ticker opportunity ranking, with filters |
 | `run_screener` | A named thesis preset over the ranking |
+| `rank_income_setups` | Cross-ticker covered-call / cash-secured-put ranking, with filters |
 | `get_trade_setup` | Compact agent-oriented trade setup for one ticker |
 
 All tools return the v2 JSON payloads unchanged (already agent-shaped). Failures come back as a

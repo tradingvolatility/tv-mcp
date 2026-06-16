@@ -19,6 +19,7 @@ EXPECTED_TOOLS = {
     "get_options_volume",
     "rank_top_setups",
     "run_screener",
+    "rank_income_setups",
     "get_trade_setup",
     "list_capabilities",
 }
